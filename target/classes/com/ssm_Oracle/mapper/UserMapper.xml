@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="User" >
+
+	<resultMap type="User" id="BaseUserMap">
+		<constructor>
+			<idArg column="id" javaType="java.lang.String" jdbcType="OTHER"/>
+			<arg column="username" javaType="java.lang.String" jdbcType="OTHER"/>
+			<arg column="password" javaType="java.lang.String" jdbcType="OTHER"/>
+			<arg column="email" javaType="java.lang.String" jdbcType="OTHER"/>
+			<arg column="establishTime" javaType="java.lang.String" jdbcType="OTHER"/>
+		</constructor>
+	</resultMap>
+
+
+	<!-- 所有的增删查改都在这里定义sql语句 -->
+	 <!-- 查询所有的用户信息 -->
+	  <select id="findUsers" parameterType="User" resultType="User">
+	  	SELECT id,username,password FROM krry_user_test
+	  </select>
+	  
+	  <!-- 登录时根据输入的昵称或账号查找用户 -->
+	  <select id="getLogin" parameterType="User" resultType="User" >
+	  	SELECT
+	  		id,
+	  		username,
+	  		password,
+	  		email,
+	  		establish_time as establishTime	
+	  	from
+	  		krry_user_test
+	  	where
+	  	
+	  		email = #{username} or username = #{username}	
+	  	
+	  </select>
+	  
+	  <!-- 若已存在用户信息，再查询密码是否正确 -->
+	  <select id="getpass" parameterType="User" resultType="User" >
+	  	SELECT
+	  		id,
+	  		username,
+	  		password,
+	  		email,
+	  		establish_time as establishTime	
+	  	from
+	  		krry_user_test
+	  	where
+	  		username = #{username}
+	  </select>
+	  <!-- 注册时根据输入的昵称查找用户 -->
+	<select id="getothernameres" parameterType="User" resultType="User" >
+		SELECT
+			id,
+			username,
+			password,
+			email,
+			establish_time as establishTime
+		FROM
+			krry_user_test
+		WHERE
+			username = #{username}
+	</select>
+	
+	   <!-- 注册时根据输入的账号查找用户 -->
+	   <select id="getemailres" parameterType="User" resultType="User" >
+	   	SELECT
+	  		id,
+	  		username,
+	  		password,
+	  		email,
+	  		establish_time as establishTime	
+	  	from
+	  		krry_user_test
+	  	where
+	  		 email = #{email}
+	   </select>
+	   <!-- 注册用户信息 -->
+	   <insert id="saveUser" parameterType="User">
+	   	INSERT INTO krry_user_test(
+	   		id,
+	  		username,
+	  		password,
+	  		email,
+	  		establish_time
+	  	)VALUES(
+	  		#{id},
+	  		#{username},
+	  		#{password},
+	  		#{email},
+	  		#{establishTime}
+	  	)	
+	   </insert>
+	   
+	   <!-- 注册用户信息 -->
+	   <insert id="insertByPrimary" parameterType="User">
+	   	INSERT INTO krry_user_test(
+	   		id,
+	  		username,
+	  		password,
+	  		email,
+	  		establish_time
+	  	)VALUES(
+	  		#{id},
+	  		#{username},
+	  		#{password},
+	  		#{email},
+	  		#{establishTime}
+	  	)	
+	   </insert>
+	   
+	    <!-- 修改用户信息 -->
+	   <update id="updateByPrimary" parameterType="User">
+	   		update krry_user_test set username = #{username},password = #{password},email = #{email},establish_time = #{establishTime}
+	   		where id = #{id}
+	   </update>
+	   
+	    <!-- 删除用户信息 -->
+	   <delete id="deleteByPrimary" parameterType="User">
+	   		delete from krry_user_test where id = #{id}
+	   </delete>
+	   
+	    <!-- 根据主键查询 -->
+	   <select id="selectByPrimary" parameterType="User" resultType="User" >
+	   	SELECT
+	  		id,
+	  		username,
+	  		password,
+	  		email,
+	  		establish_time as establishTime	
+	  	from
+	  		krry_user_test
+	  	where
+	  		 id = #{id}
+	   </select>
+	   
+	    <!-- 根据昵称查询列表 -->
+	   <select id="selectUsersByUsername" parameterType="User"  resultMap="BaseUserMap">
+	   	SELECT
+	  		id,
+	  		username,
+	  		password,
+	  		email,
+	  		establish_time as establishTime	
+	  	from
+	  		krry_user_test
+	  	where
+	  		 username = #{username}
+	   </select>
+	   
+	    <!-- 注册时根据输入的账号查找用户 -->
+	   <select id="selectUserByEmail" parameterType="User"  resultMap="BaseUserMap" >
+	   	SELECT
+	  		id,
+	  		username,
+	  		password,
+	  		email,
+	  		establish_time as establishTime	
+	  	from
+	  		krry_user_test
+	  	where
+	  		 email = #{email}
+	   </select>
+</mapper>

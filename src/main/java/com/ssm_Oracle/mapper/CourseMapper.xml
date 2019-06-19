@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Course" >
+
+	<resultMap type="Course" id="BaseCourseMap">
+		<constructor>
+			<idArg column="id" javaType="java.lang.String" jdbcType="OTHER"/>
+			<arg column="CName" javaType="java.lang.String" jdbcType="OTHER"/>
+		</constructor>
+	</resultMap>
+
+
+	<!-- 所有的增删查改都在这里定义sql语句 -->
+	  <!-- 登录时根据输入的昵称或账号查找用户 -->
+	  <select id="getLogin" parameterType="Course" resultType="Course" >
+	  	SELECT
+	  		id,
+	  		CName,
+	  	from
+	  		krry_Course_test
+	  	where
+	  		CName = #{CName}	
+	  	
+	  </select>
+	  
+	  <!-- 若已存在用户信息，再查询密码是否正确 -->
+	  <select id="getpass" parameterType="Course" resultType="Course" >
+	  	SELECT
+	  		id,
+	  		CName,
+	  			
+	  	from
+	  		krry_Course_test
+	  	where
+	  		CName = #{CName}
+	  </select>
+	  <!-- 注册时根据输入的昵称查找用户 -->
+	<select id="getotherCNameres" parameterType="Course" resultType="Course" >
+		SELECT
+			id,
+			CName,
+			password,
+			email,
+			establish_time as establishTime
+		FROM
+			krry_Course_test
+		WHERE
+			CName = #{CName}
+	</select>
+	
+	   <!-- 注册时根据输入的账号查找用户 -->
+	   <select id="getemailres" parameterType="Course" resultType="Course" >
+	   	SELECT
+	  		id,
+	  		CName,
+	  		password,
+	  		email,
+	  		establish_time as establishTime	
+	  	from
+	  		krry_Course_test
+	  	where
+	  		 email = #{email}
+	   </select>
+	   <!-- 注册用户信息 -->
+	   <insert id="saveCourse" parameterType="Course">
+	   	INSERT INTO krry_Course_test(
+	   		id,
+	  		CName,
+	  		password,
+	  		email,
+	  		establish_time
+	  	)VALUES(
+	  		#{id},
+	  		#{CName},
+	  		#{password},
+	  		#{email},
+	  		#{establishTime}
+	  	)	
+	   </insert>
+	   
+	   <!-- 注册用户信息 -->
+	   <insert id="insertByPrimary" parameterType="Course">
+	   	INSERT INTO krry_Course_test(
+	   		id,
+	  		CName,
+	  		password,
+	  		email,
+	  		establish_time
+	  	)VALUES(
+	  		#{id},
+	  		#{CName},
+	  		#{password},
+	  		#{email},
+	  		#{establishTime}
+	  	)	
+	   </insert>
+	   
+	    <!-- 修改用户信息 -->
+	   <update id="updateByPrimary" parameterType="Course">
+	   		update krry_Course_test set CName = #{CName},password = #{password},email = #{email},establish_time = #{establishTime}
+	   		where id = #{id}
+	   </update>
+	   
+	    <!-- 删除用户信息 -->
+	   <delete id="deleteByPrimary" parameterType="Course">
+	   		delete from krry_Course_test where id = #{id}
+	   </delete>
+	   
+	    <!-- 根据主键查询 -->
+	   <select id="selectByPrimary" parameterType="Course" resultType="Course" >
+	   	SELECT
+	  		id,
+	  		CName,
+	  		password,
+	  		email,
+	  		establish_time as establishTime	
+	  	from
+	  		krry_Course_test
+	  	where
+	  		 id = #{id}
+	   </select>
+	   
+	    <!-- 根据昵称查询列表 -->
+	   <select id="selectCoursesByCName" parameterType="Course"  resultMap="BaseCourseMap">
+	   	SELECT
+	  		id,
+	  		CName,
+	  		password,
+	  		email,
+	  		establish_time as establishTime	
+	  	from
+	  		krry_Course_test
+	  	where
+	  		 CName = #{CName}
+	   </select>
+	   
+	    <!-- 注册时根据输入的账号查找用户 -->
+	   <select id="selectUserByEmail" parameterType="Course"  resultMap="BaseCourseMap" >
+	   	SELECT
+	  		id,
+	  		CName,
+	  		password,
+	  		email,
+	  		establish_time as establishTime	
+	  	from
+	  		krry_Course_test
+	  	where
+	  		 email = #{email}
+	   </select>
+</mapper>
