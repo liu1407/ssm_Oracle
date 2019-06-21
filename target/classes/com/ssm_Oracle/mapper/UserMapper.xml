@@ -11,7 +11,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<arg column="username" javaType="java.lang.String" jdbcType="OTHER"/>
 			<arg column="password" javaType="java.lang.String" jdbcType="OTHER"/>
 			<arg column="email" javaType="java.lang.String" jdbcType="OTHER"/>
-			<arg column="establishTime" javaType="java.lang.String" jdbcType="OTHER"/>
+			<arg column="user_Type" javaType="java.lang.String" jdbcType="OTHER"/>
+			<arg column="establish_Time" javaType="java.lang.String" jdbcType="OTHER"/>
 		</constructor>
 	</resultMap>
 
@@ -19,65 +20,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<!-- 所有的增删查改都在这里定义sql语句 -->
 	 <!-- 查询所有的用户信息 -->
 	  <select id="findUsers" parameterType="User" resultType="User">
-	  	SELECT id,username,password FROM krry_user_test
+	  	SELECT id,username,password,email,user_type,establish_Time FROM krry_user_test
 	  </select>
 	  
-	  <!-- 登录时根据输入的昵称或账号查找用户 -->
-	  <select id="getLogin" parameterType="User" resultType="User" >
-	  	SELECT
-	  		id,
-	  		username,
-	  		password,
-	  		email,
-	  		establish_time as establishTime	
-	  	from
-	  		krry_user_test
-	  	where
-	  	
-	  		email = #{username} or username = #{username}	
-	  	
-	  </select>
-	  
-	  <!-- 若已存在用户信息，再查询密码是否正确 -->
-	  <select id="getpass" parameterType="User" resultType="User" >
-	  	SELECT
-	  		id,
-	  		username,
-	  		password,
-	  		email,
-	  		establish_time as establishTime	
-	  	from
-	  		krry_user_test
-	  	where
-	  		username = #{username}
-	  </select>
-	  <!-- 注册时根据输入的昵称查找用户 -->
-	<select id="getothernameres" parameterType="User" resultType="User" >
-		SELECT
-			id,
-			username,
-			password,
-			email,
-			establish_time as establishTime
-		FROM
-			krry_user_test
-		WHERE
-			username = #{username}
-	</select>
-	
-	   <!-- 注册时根据输入的账号查找用户 -->
-	   <select id="getemailres" parameterType="User" resultType="User" >
-	   	SELECT
-	  		id,
-	  		username,
-	  		password,
-	  		email,
-	  		establish_time as establishTime	
-	  	from
-	  		krry_user_test
-	  	where
-	  		 email = #{email}
-	   </select>
 	   <!-- 注册用户信息 -->
 	   <insert id="saveUser" parameterType="User">
 	   	INSERT INTO krry_user_test(
@@ -85,36 +30,40 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	  		username,
 	  		password,
 	  		email,
+	  		user_type,
 	  		establish_time
 	  	)VALUES(
 	  		#{id},
 	  		#{username},
 	  		#{password},
 	  		#{email},
+	  		#{userType},
 	  		#{establishTime}
 	  	)	
 	   </insert>
 	   
 	   <!-- 注册用户信息 -->
-	   <insert id="insertByPrimary" parameterType="User">
+	   <insert id="insert" parameterType="User">
 	   	INSERT INTO krry_user_test(
 	   		id,
 	  		username,
 	  		password,
 	  		email,
+	  		user_type,
 	  		establish_time
 	  	)VALUES(
 	  		#{id},
 	  		#{username},
 	  		#{password},
 	  		#{email},
+	  		#{userType},
 	  		#{establishTime}
 	  	)	
 	   </insert>
 	   
 	    <!-- 修改用户信息 -->
 	   <update id="updateByPrimary" parameterType="User">
-	   		update krry_user_test set username = #{username},password = #{password},email = #{email},establish_time = #{establishTime}
+	   		update krry_user_test set username = #{username},password = #{password},email = #{email},user_type=#{userType},establish_time = #{establishTime}
 	   		where id = #{id}
 	   </update>
 	   
@@ -130,21 +79,23 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	  		username,
 	  		password,
 	  		email,
-	  		establish_time as establishTime	
+	  		user_type,
+	  		establish_time	
 	  	from
 	  		krry_user_test
 	  	where
 	  		 id = #{id}
 	   </select>
 	   
-	    <!-- 根据昵称查询列表 -->
-	   <select id="selectUsersByUsername" parameterType="User"  resultMap="BaseUserMap">
+	    <!-- 根据昵称查询 -->
+	   <select id="selectUserByUsername" parameterType="User"  resultMap="BaseUserMap">
 	   	SELECT
 	  		id,
 	  		username,
 	  		password,
 	  		email,
-	  		establish_time as establishTime	
+	  		user_type,
+	  		establish_time	
 	  	from
 	  		krry_user_test
 	  	where
@@ -158,7 +109,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	  		username,
 	  		password,
 	  		email,
-	  		establish_time as establishTime	
+	  		user_type,
+	  		establish_time	
 	  	from
 	  		krry_user_test
 	  	where

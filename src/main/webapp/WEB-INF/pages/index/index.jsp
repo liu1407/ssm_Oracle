@@ -1,6 +1,5 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@include file="../common/common.jsp" %>
-
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
   <head>
@@ -8,12 +7,15 @@
   </head>
   
   <body>
-    	<p class="title">用户名：<span class="username">${user.username}</span>已登录</p><br>
+  	<center>
+  		<p class="title">用户名：<span class="username">${user.username}</span>已登录</p><br>
     	<a href="${basePath}/login/logout" id="login">退出登录</a>
+    </center>
     	
-    	<script type="text/javascript" src="${basePath}/resourse/js/jquery-1.11.2.min.js"></script>
+    	<script type="text/javascript" src="${basePath}/resource/js/jquery-1.11.2.min.js"></script>
     	<script type="text/javascript">
     		var basePath = "${basePath}";
+    		console.log(basePath);
     		if(isEmpty($(".username").text())){
     			$(".title").text("未登录");
     			$("#login").attr("href",basePath+"/login/index");

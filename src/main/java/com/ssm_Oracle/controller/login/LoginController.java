@@ -1,22 +1,19 @@
 package com.ssm_Oracle.controller.login;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.UUID;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.ssm_Oracle.entity.User;
 import com.ssm_Oracle.service.IUserService;
-import com.ssm_Oracle.service.TestService;
 import com.ssm_Oracle.util.CommonUtils;
 import com.ssm_Oracle.util.TmStringUtils;
 
@@ -26,9 +23,6 @@ public class LoginController {
 
 	@Autowired
 	private IUserService userService;
-	
-	@Autowired
-	private TestService testService;
 	
 	private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
 	
@@ -55,7 +49,7 @@ public class LoginController {
 	 */
 	@RequestMapping("/index")
 	public String index(){
-		
+		logger.info("跳转的登陆界面");
 		return "index/login";//默认是转发，不会显示转发路径
 	}
 	
@@ -65,41 +59,66 @@ public class LoginController {
 	 * @return
 	 */
 	@RequestMapping(method=RequestMethod.POST,value="/logined")
-	public String login(HttpServletRequest request, Model model){
+	public String login(HttpServletRequest request, HttpServletResponse response){
 		
 		String username = request.getParameter("username");
 		String password = request .getParameter("password");
+		String userType = request .getParameter("userType");
 		User user = new User();
 		//如果用户名和密码为null,那么就返回已null标识
-		if(TmStringUtils.isEmpty(username))return "index/allError";
-		if(TmStringUtils.isEmpty(password))return "index/allError";
-		
-		
+		if(TmStringUtils.isEmpty(username) ||TmStringUtils.isEmpty(password)||TmStringUtils.isEmpty(userType)){
+			logger.info("传入参数为空");
+			return "index/allError";
+		}
 		//密码进行加密处理
+		logger.info("密码加密");
 		password = TmStringUtils.md5Base64(password);
 		
 		//根据邮箱或昵称查询，用户是否存在
-		user.setUsername(username);
+		String reg = "[A-z]+[A-z0-9_-]*\\@[A-z0-9]+\\.[A-z]+";
+		if(username.matches(reg)==false){
+			user.setUsername(username);
+		}else{
+			user.setEmail(username);
+		}
 		user.setPassword(password);
-		user = userService.getLogin(user);
-		
+		user.setUserType(userType);
+		Map<String, Object> map = userService.login(user);		
 		//如果存在
-		if(CommonUtils.isNotEmpty(user)){
-			User userpas = userService.getpass(user);
-			if(CommonUtils.isNotEmpty(userpas)){
-				//如果密码正确
-				//将用户信息放入到会话中...
-				request.getSession().setAttribute("user", user);
-				//这里使用重定向，返回命名空间的上一级，重定向到命名空间为Krry下的index.krry
-				return "redirect:../index";
-			}else{
+		if(CommonUtils.isNotEmpty(map)){
+			String result = (String)map.get("retCode");
+			logger.info("service返回码：" + result);
+			if("0".equals(result)){
+				//如果密码正确,设置信息，返回首页
+				
+				//第一种：将用户信息放入到会话中，使用重定向到另一个controller，返回首页（适合还有另外的逻辑需要处理）
+//				request.getSession().setAttribute("user", user);
+//				return "redirect:../index";
+				//第二种将信息设置到request中，直接返回页面（适合只返回数据）
+				logger.info("登陆成功");
+				user = (User)map.get("user");
+				request.setAttribute("user", user);
+				return "index/index";
+			}else if("1".equals(result)){
 				//如果密码错误
-				System.out.println("密码错误");
+				logger.info("密码错误");
+				return "index/error";
+			}else if("2".equals(result)){
+				//如果用户类型不匹配
+				logger.info("用户类型不匹配");
+				return "index/error";
+			}else if("3".equals(result)){
+				//如果用户名不存在
+				logger.info("用户名不存在");
+				return "index/error";
+			}else{
+				//如果其他错误
+				logger.info("其他错误");
 				return "index/error";
 			}
 		}else{
 			//如果不存在，代码邮箱和密码输入有误
-			System.out.println("用户不存在");
+			logger.info("调用service错误");
 			return "index/error";
 		}
 		
@@ -113,6 +132,7 @@ public class LoginController {
 	@RequestMapping(method=RequestMethod.GET,value="/logout")
 	public String logout(HttpServletRequest request){
 		request.getSession().invalidate(); //清空session值
+		logger.info("注销成功");
 		return "index/index";
 	}
 	
@@ -123,15 +143,7 @@ public class LoginController {
 	 */
 	@RequestMapping("/rege")
 	public String rege(){
-		User user = new User();
-		user.setEmail("liu1407@126.com");
-		
-		user = testService.selectone(user);
-		if(user == null){
-			logger.error("查询为空");
-			return "index/resgi";
-		}
-		logger.info("查询成功--"+user.toString());
+		logger.info("跳转登陆界面");
 		return "index/resgi";
 	}
 	
@@ -145,51 +157,49 @@ public class LoginController {
 		String username = request.getParameter("username");
 		String password = request .getParameter("password");
 		String email = request .getParameter("email");
+		String userType = request .getParameter("userType");
 		User user = new User();
 		
 		//如果用户名、邮箱和密码为null,那么就返回已null标识
-		if(TmStringUtils.isEmpty(username) )return "index/allError";
-		if(TmStringUtils.isEmpty(password))return "index/allError";
-		if(TmStringUtils.isEmpty(email))return "index/allError";
-		
+		if(TmStringUtils.isEmpty(username) ||TmStringUtils.isEmpty(password) || TmStringUtils.isEmpty(email) || TmStringUtils.isEmpty(userType)){
+			logger.info("传入参数为空");
+			return "index/allError";
+		}
 		//密码进行加密处理
+		logger.info("密码加密");
 		password = TmStringUtils.md5Base64(password);
 		
 		user.setUsername(username);
 		user.setPassword(password);
 		user.setEmail(email);
-		//根据昵称查询，用户是否存在
-		User user1 = userService.getothernameres(user);
-		//根据账号查询，用户是否存在
-		User user2 = userService.getemailres(user);
+		user.setUserType(userType);
+		Map<String, Object> map = userService.register(user);		
 		
-		//若存在
-		if(CommonUtils.isNotEmpty(user1)){ //昵称重复
-			return "index/allError";
+		if(CommonUtils.isNotEmpty(map)){
+			String result = (String)map.get("retCode");
+			logger.info("service返回值：" + result);
+			if("0".equals(result)){
+				//注册成功，跳转登陆页面
+				logger.info("注册成功");
+				request.setAttribute("user", user);
+				return "redirect:/index";
+			}else if("1".equals(result)){
+				//如果用户名已存在
+				logger.info("用户名已存在");
+				return "index/error";
+			}else if("2".equals(result)){
+				//如果Email已存在
+				logger.info("Email已存在");
+				return "index/error";
+			}else{
+				//如果其他错误
+				logger.info("其他错误");
+				return "index/error";
+			}
+		}else{
+			//如果注册失败
+			logger.info("调用service错误");
+			return "index/error";
 		}
-		
-		if(CommonUtils.isNotEmpty(user2)){ //email重复
-			return "index/allError";	
-		}
-		
-		 //格式化时间类型
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		String nowTime = sdf.format(new Date());
-		
-		String id = UUID.randomUUID().toString();
-		//执行到这里，说明可以注册
-		User newUser = new User(id, username, password, email, nowTime);
-		
-		//调用注册方法
-		boolean resStr = userService.saveUser(newUser);
-		if(resStr == false){
-			return "index/allError";
-		}
-		//将信息设置session作用域
-		request.getSession().setAttribute("user", newUser);
-		
-		//这里使用重定向，返回命名空间的上一级，重定向到index
-		return "redirect:../index";
-		
 	}
 }

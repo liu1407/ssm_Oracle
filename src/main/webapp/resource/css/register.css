@@ -1,0 +1,28 @@
+select{
+	width: 90%;
+	padding: 0 25%;
+}
+.maindiv{
+	width: 100%;
+	height: 100%;
+}
+.topdiv{
+	width: 20%;
+	height: 30%;
+	margin-left: 30%;
+}
+
+.leftdiv{
+	width: 50%;
+	float: left;
+	text-align: right;
+	
+}
+
+.rightdiv{
+	width: 50%;
+	float: right;
+}
+#submit{
+	margin-left: 50%
+}
