@@ -2,8 +2,6 @@ package com.ssm_Oracle.core.des;
 
 import java.security.Key;
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 import javax.crypto.Cipher;

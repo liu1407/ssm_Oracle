@@ -9,8 +9,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.ssm_Oracle.controller.login.LoginController;
-
 @Controller
 public class AppController {
 

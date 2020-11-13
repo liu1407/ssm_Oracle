@@ -1061,7 +1061,7 @@ public class TmStringUtils {
 			String[] t = { str };
 			return t;
 		}
-		ArrayList al = new ArrayList();
+		ArrayList<String> al = new ArrayList<>();
 		char[] cs = str.toCharArray();
 		char[] ss = spilter.toCharArray();
 		int length = spilter.length();
@@ -1287,7 +1287,7 @@ public class TmStringUtils {
 	}
 
 	public static void printStringWithAnyCharset(String str) {
-		Map map = Charset.availableCharsets();
+		Map<String,Charset> map = Charset.availableCharsets();
 		Object[] keys = map.keySet().toArray();
 		for (int i = 0; i < keys.length; ++i) {
 			for (int j = 0; j < keys.length; ++j) {
@@ -1404,11 +1404,11 @@ public class TmStringUtils {
 		return sb.toString();
 	}
 
-	public static String join(List list) {
+	public static String join(List<String> list) {
 		return join(list, ",");
 	}
 
-	public static String join(List list, String spliter) {
+	public static String join(List<String> list, String spliter) {
 		if (list == null) {
 			return null;
 		}
